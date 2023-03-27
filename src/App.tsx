@@ -11,20 +11,17 @@ function App() {
   const [준비중, 준비중_변경] = useState(true);
 
   const 할일_가져오기 = () => {
-    준비중_변경(true);
-    fetch("/todos", { method: "GET" })
-      .then((response) => response.json())
-      .then((data) => {
-        할일_목록_변경(data);
-        준비중_변경(false);
-      });
+    // 1번 문제
+    // 서버로부터 할일 목록 가져와주세요.
+    // 이 함수에 그대로 구현을 해도 좋고
+    // 상태값과 함수, 아래의 useEffect는 지우고 본인이 새로 상태값들과 함수들을 작성해도 됩니다
   };
 
   useEffect(() => {
     할일_가져오기();
   }, []);
 
-  // 1번 문제
+  // 2번 문제
   const 새로운_할일을_추가 = (제목: string, 내용: string) => {
     if (!제목) {
       toaster.notify({
@@ -37,16 +34,12 @@ function App() {
     // 새로 생성된 할일을 추가 해주세요!
   };
 
-  // 2번 문제
+  // 3번 문제
   const 할일_상태필터가_변경되었을때 = (
     변경된_필터: "전체" | "시작전" | "진행중" | "완료"
   ) => {
-    toaster.notify({
-      status: "info",
-      title: "변경된 상태",
-      description: 변경된_필터,
-    });
     // 변경된 상태필터에 해당하는 할일만 보여지도록 구현해주세요!
+    console.log(변경된_필터);
   };
 
   return (

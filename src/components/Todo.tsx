@@ -22,38 +22,41 @@ const Todo = ({ todo }: any) => {
         </Box>
         <Paragraph size={300}>{내용}</Paragraph>
       </Box>
-      {상태 !== "완료" && (
-        <Box
-          display="flex"
-          marginTop={8}
-          justifyContent="flex-end"
-          alignItems="center"
-          gap={4}
+
+      <Box
+        display="flex"
+        marginTop={8}
+        justifyContent="flex-end"
+        alignItems="center"
+        gap={4}
+      >
+        <Button
+          variant="error"
+          onClick={() => {
+            // 4-1번 문제
+            // 삭제하는 기능을 추가해주세요
+            // 인라인 함수, 함수 선언, props로 받기 등
+            // 본인이 생각했을때 좋은 방법으로 구현 해주세요.
+          }}
         >
-          <Button
-            variant="error"
-            onClick={() => {
-              // 3-1번 문제
-              // 삭제하는 기능을 추가해주세요
-              // 인라인 함수, 함수 선언, props로 받기 등
-              // 본인이 생각했을때 가장 좋은 방법으로 구현 해주세요.
-            }}
-          >
-            삭제
-          </Button>
+          삭제
+        </Button>
+        {상태 !== "완료" && (
           <Button
             variant="primary"
             onClick={() => {
-              // 3-2번 문제
+              // 4-2번 문제
               // 다음 상태로 변경하는 기능을 추가해주세요
               // 인라인 함수, 함수 선언, props로 받기 등
-              // 본인이 생각했을때 가장 좋은 방법으로 구현 해주세요.
+              // 본인이 생각했을때 좋은 방법으로 구현 해주세요.
+              // "시작전" 상태라면 "진행중"
+              // "진행중" 상태라면 "완료" 상태로 변경해주시면 됩니다
             }}
           >
             다음
           </Button>
-        </Box>
-      )}
+        )}
+      </Box>
     </Card>
   );
 };

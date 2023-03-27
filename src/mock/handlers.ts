@@ -75,8 +75,8 @@ export const handlers = [
       return res(ctx.status(400, "해당 id를 가진 todo를 찾을 수 없습니다."));
 
     try {
-      const 변경한_상태 = await req.text();
-      const updatedTodo = { ...todos[targetIndex], 상태: 변경한_상태 };
+      const { 상태 } = await req.json();
+      const updatedTodo = { ...todos[targetIndex], 상태 };
       todos[targetIndex] = updatedTodo;
       return res(ctx.status(200), ctx.json(updatedTodo));
     } catch (error) {
@@ -92,6 +92,6 @@ export const handlers = [
       return res(ctx.status(400, "해당 id를 가진 todo를 찾을 수 없습니다."));
 
     todos.splice(targetIndex, 1);
-    return res(ctx.status(201));
+    return res(ctx.status(201), ctx.json({}));
   }),
 ];
