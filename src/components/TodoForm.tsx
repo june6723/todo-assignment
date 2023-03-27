@@ -1,7 +1,11 @@
 import { Box, Button, Card, Heading, Textarea, TextInput } from "@parte-ds/ui";
 import { useState } from "react";
 
-const TodoForm = ({ onAdd }: any) => {
+interface TodoFormProps {
+  onAdd: (제목: string, 내용: string) => void;
+}
+
+const TodoForm = ({ onAdd }: TodoFormProps) => {
   const [제목, 제목_변경] = useState("");
   const [내용, 내용_변경] = useState("");
 

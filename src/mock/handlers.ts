@@ -22,10 +22,22 @@ const todos = [
 ];
 let idCnt = 3;
 
+const delay = () =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 500);
+  });
+
 export const handlers = [
   // 할일 목록
-  rest.get("/todos", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(todos));
+  rest.get("/todos", async (req, res, ctx) => {
+    try {
+      await delay();
+      return res(ctx.status(200), ctx.json(todos));
+    } catch (error) {
+      return res(ctx.status(500));
+    }
   }),
 
   // 할일 추가

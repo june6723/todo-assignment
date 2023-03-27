@@ -1,33 +1,8 @@
-import {
-  Box,
-  Button,
-  Card,
-  Heading,
-  Paragraph,
-  Textarea,
-  TextInput,
-} from "@parte-ds/ui";
-import { useState } from "react";
+import { Box, Button, Card, Heading, Paragraph } from "@parte-ds/ui";
 import TodoStatusLabel from "./TodoStatusLabel";
 
-const 다음_상태_구하기 = (현재_상태: any) => {
-  switch (현재_상태) {
-    case "시작전":
-      return "진행중";
-    case "진행중":
-      return "완료";
-    case "완료":
-      return "완료";
-  }
-};
-
-const Todo = ({ todo, onEdit, onEditStatus, onDelete }: any) => {
-  const { 제목, 내용, 상태, id } = todo;
-  const [수정모드, 수정모드_변경] = useState(false);
-
-  const [제목_입력, 제목_입력_변경] = useState(제목);
-  const [내용_입력, 내용_입력_변경] = useState(내용);
-
+const Todo = ({ todo }: any) => {
+  const { 제목, 내용, 상태 } = todo;
   return (
     <Card
       padding={8}
@@ -42,30 +17,12 @@ const Todo = ({ todo, onEdit, onEditStatus, onDelete }: any) => {
           alignItems="center"
           marginBottom={4}
         >
-          {수정모드 ? (
-            <TextInput
-              value={제목_입력}
-              onChange={(e) => {
-                제목_입력_변경(e.target.value);
-              }}
-            />
-          ) : (
-            <Heading size={500}>{제목}</Heading>
-          )}
+          <Heading size={500}>{제목}</Heading>
           <TodoStatusLabel status={상태} />
         </Box>
-        {수정모드 ? (
-          <Textarea
-            value={내용_입력}
-            onChange={(e) => {
-              내용_입력_변경(e.target.value);
-            }}
-          />
-        ) : (
-          <Paragraph size={300}>{내용}</Paragraph>
-        )}
+        <Paragraph size={300}>{내용}</Paragraph>
       </Box>
-      {상태 !== "완료" && !수정모드 && (
+      {상태 !== "완료" && (
         <Box
           display="flex"
           marginTop={8}
@@ -73,39 +30,27 @@ const Todo = ({ todo, onEdit, onEditStatus, onDelete }: any) => {
           alignItems="center"
           gap={4}
         >
-          <Button variant="secondary" onClick={() => 수정모드_변경(true)}>
-            수정
-          </Button>
-          <Button variant="error" onClick={() => onDelete?.(id)}>
+          <Button
+            variant="error"
+            onClick={() => {
+              // 3-1번 문제
+              // 삭제하는 기능을 추가해주세요
+              // 인라인 함수, 함수 선언, props로 받기 등
+              // 본인이 생각했을때 가장 좋은 방법으로 구현 해주세요.
+            }}
+          >
             삭제
           </Button>
           <Button
             variant="primary"
-            onClick={() => onEditStatus?.(id, 다음_상태_구하기(상태))}
-          >
-            다음
-          </Button>
-        </Box>
-      )}
-      {수정모드 && (
-        <Box
-          display="flex"
-          marginTop={8}
-          justifyContent="flex-end"
-          alignItems="center"
-          gap={4}
-        >
-          <Button variant="secondary" onClick={() => 수정모드_변경(false)}>
-            취소
-          </Button>
-          <Button
-            variant="primary"
             onClick={() => {
-              onEdit?.({ ...todo, 제목: 제목_입력, 내용: 내용_입력 });
-              수정모드_변경(false);
+              // 3-2번 문제
+              // 다음 상태로 변경하는 기능을 추가해주세요
+              // 인라인 함수, 함수 선언, props로 받기 등
+              // 본인이 생각했을때 가장 좋은 방법으로 구현 해주세요.
             }}
           >
-            완료
+            다음
           </Button>
         </Box>
       )}

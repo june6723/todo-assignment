@@ -4,7 +4,7 @@ import App from "./App";
 import { ThemeProvider } from "@parte-ds/ui";
 import { GlobalStyle } from "./GlobalStyles";
 
-import { worker } from "./API/worker";
+import { worker } from "./mock/worker";
 
 if (import.meta.env.MODE === "development") {
   worker.start();
