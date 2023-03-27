@@ -29,11 +29,15 @@ export const handlers = [
   }),
 
   // 할일 추가
-  rest.post("/todo", (req, res, ctx) => {
-    req
-      .json()
-      .then((todo) => todos.push({ id: ++idCnt, ...todo, 상태: "시작전" }));
-    return res(ctx.status(201));
+  rest.post("/todo", async (req, res, ctx) => {
+    try {
+      const params = await req.json();
+      const newTodo = { id: ++idCnt, ...params, 상태: "시작전" };
+      todos.push(newTodo);
+      return res(ctx.status(201), ctx.json(newTodo));
+    } catch (error) {
+      return res(ctx.status(500, "json parsing error"));
+    }
   }),
 
   // 할일 수정
@@ -43,27 +47,30 @@ export const handlers = [
       return res(ctx.status(400, "해당 id를 가진 todo를 찾을 수 없습니다."));
 
     try {
-      const updatedTodo = await req.json();
-      todos[targetIndex] = { ...todos[targetIndex], ...updatedTodo };
-      return res(ctx.status(200));
+      const params = await req.json();
+      const updatedTodo = { ...todos[targetIndex], ...params };
+      todos[targetIndex] = updatedTodo;
+      return res(ctx.status(200), ctx.json(updatedTodo));
     } catch (error) {
       console.log(error);
       return res(ctx.status(500, "json parsing error"));
     }
   }),
   // 할일 상태 수정
-  rest.put("/todo/:id/status", (req, res, ctx) => {
+  rest.put("/todo/:id/status", async (req, res, ctx) => {
     const targetIndex = todos.findIndex(({ id }) => `${id}` === req.params.id);
     if (targetIndex < 0)
       return res(ctx.status(400, "해당 id를 가진 todo를 찾을 수 없습니다."));
 
-    req
-      .text()
-      .then((변경한_상태) => {
-        todos[targetIndex] = { ...todos[targetIndex], 상태: 변경한_상태 };
-        return res(ctx.status(200));
-      })
-      .catch(() => res(ctx.status(500, "json parsing error")));
+    try {
+      const 변경한_상태 = await req.text();
+      const updatedTodo = { ...todos[targetIndex], 상태: 변경한_상태 };
+      todos[targetIndex] = updatedTodo;
+      return res(ctx.status(200), ctx.json(updatedTodo));
+    } catch (error) {
+      console.log(error);
+      return res(ctx.status(500, "json parsing error"));
+    }
   }),
 
   // 할일 삭제

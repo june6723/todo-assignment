@@ -9,8 +9,9 @@ import {
   Option,
   Spinner,
 } from "@parte-ds/ui";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { css } from "styled-components";
+import ExpensiveTodo from "./components/ExpensiveTodo";
 import Todo from "./components/Todo";
 import TodoForm from "./components/TodoForm";
 
@@ -21,12 +22,18 @@ const 할일_상태_옵션들: Option<any>[] = [
   { label: "완료", value: "완료" },
 ];
 
+// const MemoizedExpensiveTodo = memo(ExpensiveTodo);
 function App() {
   const [할일_목록, 할일_목록_변경] = useState<any[]>([]);
   const [준비중, 준비중_변경] = useState(true);
 
+  const [선택된_옵션, 선택된_옵션_변경] = useState(할일_상태_옵션들[0]);
+  const 보여줄_할일_목록 = 할일_목록.filter(({ 상태 }) => {
+    if (선택된_옵션.value === "전체") return true;
+    return 상태 === 선택된_옵션.value;
+  });
+
   const 할일_가져오기 = () => {
-    준비중_변경(true);
     fetch("/todos", { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
@@ -39,22 +46,18 @@ function App() {
     할일_가져오기();
   }, []);
 
-  const [선택된_옵션, 선택된_옵션_변경] = useState(할일_상태_옵션들[0]);
-
-  const onEdit = (변경된_할일: any) => {
+  const onEdit = useCallback((변경된_할일: any) => {
     fetch(`/todo/${변경된_할일.id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+
       body: JSON.stringify({
         제목: 변경된_할일.제목,
         내용: 변경된_할일.내용,
       }),
     }).then(할일_가져오기);
-  };
+  }, []);
 
-  const onEditStatus = (id: number, 변경할_상태: any) => {
+  const onEditStatus = useCallback((id: number, 변경할_상태: any) => {
     fetch(`/todo/${id}/status`, {
       method: "PUT",
       headers: {
@@ -62,16 +65,25 @@ function App() {
       },
       body: 변경할_상태,
     }).then(할일_가져오기);
-  };
+  }, []);
 
-  const onDelete = (id: number) => {
+  const onDelete = useCallback((id: number) => {
     fetch(`/todo/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(할일_가져오기);
-  };
+    })
+      // .then(할일_가져오기);
+      .then(() => {
+        할일_목록_변경((prev) => {
+          const targetIndex = prev.findIndex((할일) => 할일.id === id);
+          const newList = [...prev];
+          newList.splice(targetIndex, 1);
+          return newList;
+        });
+      });
+  }, []);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={12}>
@@ -125,7 +137,7 @@ function App() {
                 <Spinner size={48} />
               </Box>
             ) : (
-              할일_목록.map((할일) => (
+              보여줄_할일_목록.map((할일) => (
                 <Todo
                   key={할일.id}
                   todo={할일}
