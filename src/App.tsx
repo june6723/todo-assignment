@@ -8,6 +8,7 @@ import {
   IconButton,
   Option,
   Spinner,
+  toaster,
 } from "@parte-ds/ui";
 import { memo, useCallback, useEffect, useState } from "react";
 import { css } from "styled-components";
@@ -22,7 +23,7 @@ const 할일_상태_옵션들: Option<any>[] = [
   { label: "완료", value: "완료" },
 ];
 
-// const MemoizedExpensiveTodo = memo(ExpensiveTodo);
+const MemoizedExpensiveTodo = memo(ExpensiveTodo);
 function App() {
   const [할일_목록, 할일_목록_변경] = useState<any[]>([]);
   const [준비중, 준비중_변경] = useState(true);
@@ -34,6 +35,7 @@ function App() {
   });
 
   const 할일_가져오기 = () => {
+    준비중_변경(true);
     fetch("/todos", { method: "GET" })
       .then((response) => response.json())
       .then((data) => {
@@ -46,15 +48,47 @@ function App() {
     할일_가져오기();
   }, []);
 
+  const onAdd = (제목: any, 내용: any) => {
+    if (!제목) {
+      toaster.notify({
+        status: "warning",
+        title: "경고",
+        description: "제목은 필수로 입력해야 합니다",
+      });
+      return;
+    }
+    fetch("/todo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 제목, 내용 }),
+    })
+      .then((res) => res.json())
+      .then((todo) => {
+        할일_목록_변경((prev) => [...prev, todo]);
+      });
+  };
+
   const onEdit = useCallback((변경된_할일: any) => {
     fetch(`/todo/${변경된_할일.id}`, {
       method: "PUT",
-
       body: JSON.stringify({
         제목: 변경된_할일.제목,
         내용: 변경된_할일.내용,
       }),
-    }).then(할일_가져오기);
+    })
+      .then((res) => res.json())
+      .then((todo) => {
+        할일_목록_변경((prev) => {
+          const targetIndex = prev.findIndex(
+            (할일) => 할일.id === 변경된_할일.id
+          );
+          const newList = [...prev];
+          newList[targetIndex] = todo;
+          return newList;
+        });
+      });
   }, []);
 
   const onEditStatus = useCallback((id: number, 변경할_상태: any) => {
@@ -64,7 +98,16 @@ function App() {
         "Content-Type": "application/json",
       },
       body: 변경할_상태,
-    }).then(할일_가져오기);
+    })
+      .then((res) => res.json())
+      .then((todo) => {
+        할일_목록_변경((prev) => {
+          const targetIndex = prev.findIndex((할일) => 할일.id === id);
+          const newList = [...prev];
+          newList[targetIndex] = todo;
+          return newList;
+        });
+      });
   }, []);
 
   const onDelete = useCallback((id: number) => {
@@ -107,7 +150,7 @@ function App() {
         </Box>
         <Box display="flex" gap={24}>
           <Box display="flex" flexDirection="column" gap={8}>
-            <TodoForm refresh={할일_가져오기} />
+            <TodoForm onAdd={onAdd} />
             <Dropdown>
               <Dropdown.Trigger>
                 <Button variant="secondary">{선택된_옵션.label}</Button>
@@ -138,7 +181,7 @@ function App() {
               </Box>
             ) : (
               보여줄_할일_목록.map((할일) => (
-                <Todo
+                <MemoizedExpensiveTodo
                   key={할일.id}
                   todo={할일}
                   onEdit={onEdit}
